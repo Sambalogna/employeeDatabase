@@ -139,7 +139,44 @@ function viewEmployees(){
 }
 //add employee
 function addEmployee(){
-
+    console.log('Adding an employee..')
+    db.query(`SELECT title as name, id as value FROM role`, (err, data)=>{
+    db.query(`SELECT concat(firs_name, " ", last_name) as name, id as value FROM employee`,(err, managerData)=>{
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the new employee\'s first name?',
+                    name: 'new_employee_first_name'
+                },
+                {
+                    type: 'input',
+                    message: 'What is the employee\'s last name?',
+                    name: 'new_employee_last_name'
+                },
+                {
+                    type: 'list',
+                    message: ' What does this employee do?',
+                    name: 'newEmployee',
+                    choices: data
+                },
+                {
+                    type: 'list', 
+                    message: 'Who is the employees Manager?',
+                    name: 'manager',
+                    choices: managerData
+                }
+            ])
+            .then((res)=> {
+                const SQL = `INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES(?,?,?,?);`
+                const params = [res.new_employee_first_name, res.new_employee_last_name, res.newEmployee,res.manager];
+                db.query(SQL, params, function (err, results, fields){
+                    console.log('New employee added.')
+                    viewEmployees();
+                })
+            })
+    })    
+    })
 }
 //update employee
 function updateEmployee(){
