@@ -12,7 +12,7 @@ const db = mysql.createConnection(
     }
 )
 
-function menu(){
+function menu() {
     inquirer
         .prompt([
             {
@@ -31,32 +31,32 @@ function menu(){
                 ]
             }
         ])
-        .then((res) =>{
-            if(res.start === 'View All Employees'){
+        .then((res) => {
+            if (res.start === 'View All Employees') {
                 viewEmployees();
-            } else if(res.start === ''){
+            } else if (res.start === 'Add Employee') {
                 addEmployee();
-            } else if(res.start === ''){
+            } else if (res.start === 'Update Employee Role') {
                 updateEmployee();
-            } else if(res.start === ''){
+            } else if (res.start === 'View All Roles') {
                 viewRoles();
-            } else if(res.start === ''){
+            } else if (res.start === 'Add Role') {
                 addRole();
-            } else if(res.start === ''){
+            } else if (res.start === 'View All Departments') {
                 viewDepartments();
-            } else if(res.start === ''){
+            } else if (res.start === 'Add Department') {
                 addDepartment();
-            } else if(res.start === ''){
-                
-            } 
+            } else if (res.start === 'Quit') {
+
+            }
         })
 }
 //view Departments 
 function viewDepartments() {
     console.log('Viewing all departments')
     const SQL = `SELECT * FROM department`;
-    db.query(SQL, function(err, results) {
-        if(err){
+    db.query(SQL, function (err, results) {
+        if (err) {
             console.log(error)
         }
         console.table(results)
@@ -74,26 +74,26 @@ function addDepartment() {
                 name: 'new_department'
             }
         ])
-        .then((res) =>{
+        .then((res) => {
             const SQL = `INSERT INTO department(name) VALUES(?);`
             const params = `${res.new_department}`;
-            db.query(SQL, params, function(err, results, fields){
+            db.query(SQL, params, function (err, results, fields) {
                 console.log('A new department has been added.')
                 viewDepartments();
             })
         })
 }
 //view roles
-function viewRoles(){
+function viewRoles() {
     console.log('Viewing all roles.')
     const SQL = `SELECT * FROM role`;
-    db.query(SQL, function(err, results, fields){
+    db.query(SQL, function (err, results, fields) {
         console.table(results);
         menu();
     })
 }
 //add a role
-function addRole(){
+function addRole() {
     console.log('Adding a role..')
     //queries current department name
     db.query(`SELECT name, id as value FROM department`, (err, data) => {
@@ -116,11 +116,10 @@ function addRole(){
                     choices: data
                 }
             ])
-            .then((res)=> {
+            .then((res) => {
                 const SQL = `INSERT INTO role(title, salary, department_id) VALUES(?,?,?);`
                 const params = [res.new_role_title, res.new_role_salary, res.new_role_department]
-                db.query(SQL, params, function(err,results, fields)
-                {
+                db.query(SQL, params, function (err, results, fields) {
                     console.log('A new role has been added.')
                     viewRoles();
                 })
@@ -128,58 +127,86 @@ function addRole(){
     })
 }
 //view employees
-function viewEmployees(){
+function viewEmployees() {
     console.log('Viewing all employees')
     const SQL = `SELECT role.title as Role, concat(employee.first_name, " ", employee.last_name) as EMPLOYEE, concat(manager.first_name, " ", manager.last_name) AS MANAGER, role.salary as SALARY FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN employee as manager on employee.manager_id = manager.id ORDER BY employee.first_name `
 
-    db.query(SQL, function (err, results, fields){
+    db.query(SQL, function (err, results, fields) {
         console.table(results)
         menu();
     })
 }
 //add employee
-function addEmployee(){
+function addEmployee() {
     console.log('Adding an employee..')
-    db.query(`SELECT title as name, id as value FROM role`, (err, data)=>{
-    db.query(`SELECT concat(firs_name, " ", last_name) as name, id as value FROM employee`,(err, managerData)=>{
-        inquirer
-            .prompt([
-                {
-                    type: 'input',
-                    message: 'What is the new employee\'s first name?',
-                    name: 'new_employee_first_name'
-                },
-                {
-                    type: 'input',
-                    message: 'What is the employee\'s last name?',
-                    name: 'new_employee_last_name'
-                },
-                {
-                    type: 'list',
-                    message: ' What does this employee do?',
-                    name: 'newEmployee',
-                    choices: data
-                },
-                {
-                    type: 'list', 
-                    message: 'Who is the employees Manager?',
-                    name: 'manager',
-                    choices: managerData
-                }
-            ])
-            .then((res)=> {
-                const SQL = `INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES(?,?,?,?);`
-                const params = [res.new_employee_first_name, res.new_employee_last_name, res.newEmployee,res.manager];
-                db.query(SQL, params, function (err, results, fields){
-                    console.log('New employee added.')
-                    viewEmployees();
+    db.query(`SELECT title as name, id as value FROM role`, (err, data) => {
+        db.query(`SELECT concat(first_name, " ", last_name) as name, id as value FROM employee`, (err, managerData) => {
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        message: 'What is the new employee\'s first name?',
+                        name: 'new_employee_first_name'
+                    },
+                    {
+                        type: 'input',
+                        message: 'What is the employee\'s last name?',
+                        name: 'new_employee_last_name'
+                    },
+                    {
+                        type: 'list',
+                        message: ' What does this employee do?',
+                        name: 'newEmployee',
+                        choices: data
+                    },
+                    {
+                        type: 'list',
+                        message: 'Who is this employees Manager?',
+                        name: 'manager',
+                        choices: managerData
+                    }
+                ])
+                .then((res) => {
+                    const SQL = `INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES(?,?,?,?);`
+                    const params = [res.new_employee_first_name, res.new_employee_last_name, res.newEmployee, res.manager];
+                    db.query(SQL, params, function (err, results, fields) {
+                        console.log('New employee added.')
+                        viewEmployees();
+                    })
                 })
-            })
-    })    
+        })
     })
 }
 //update employee
-function updateEmployee(){
-
+function updateEmployee() {
+    console.log('Updating employee..')
+    db.query(`SELECT concat(first_name, " ", last_name) as name, id as value FROM employee`,(err, data)=>{
+        db.query(`SELECT title as name, id AS value FROM role`, (err, roleData) => {
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                message: 'Which employee would you like to update?',
+                name: 'employee',
+                choices: data
+            },
+            {
+                type: 'list',
+                message: 'What would you like their new role to be?',
+                name: 'updateEmployee',
+                choices: roleData
+            }
+        ])
+        .then((res) => {
+            console.log('Updating employee role..')
+            const SQL = `INSERT OVERWRITE employee(role_id) values(?);`
+            const params = [res.updateEmployee]
+            db.query(SQL,params,function(err,results,fields){
+                console.log('role updated!')
+                viewEmployees();
+            })
+        })
+    })
+})
 }
 menu();
