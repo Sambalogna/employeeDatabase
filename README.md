@@ -2,6 +2,7 @@
 
 ## Description:
 
+[Video](https://watch.screencastify.com/v/MA2jZC31Sy7tUCJXsIrU)
 This project is using SQL, inquirer, and the console.table npm packages to create a navigable database of a company. The database offers several funcitonalities including the ability to view current departments,employees, and roles within the company. Departments, roles, and employees can be added as well and employee roles can be updated. 
  
 ## Table of Contents
