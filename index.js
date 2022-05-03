@@ -85,7 +85,12 @@ function addDepartment() {
 }
 //view roles
 function viewRoles(){
-
+    console.log('Viewing all roles..')
+    const SQL = `SELECT * FROM role`;
+    db.query(SQL, function(err, results, fields){
+        console.table(results);
+        menu();
+    })
 }
 //add a role
 function addRole(){
