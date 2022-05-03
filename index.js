@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
 const ctable = require('console.table');
+const { Console } = require("console");
 
 const db = mysql.createConnection(
     {
@@ -52,7 +53,15 @@ function menu(){
 }
 //view Departments 
 function viewDepartments() {
-
+    console.log('Viewing all departments')
+    const SQL = `SELECT * FROM department`;
+    db.query(SQL, function(err, results) {
+        if(err){
+            console.log(error)
+        }
+        console.table(results)
+        menu();
+    })
 }
 //add to a department
 function addDepartment() {
