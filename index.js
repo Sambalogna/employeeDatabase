@@ -129,7 +129,13 @@ function addRole(){
 }
 //view employees
 function viewEmployees(){
+    console.log('Viewing all employees')
+    const SQL = `SELECT role.title as Role, concat(employee.first_name, " ", employee.last_name) as EMPLOYEE, concat(manager.first_name, " ", manager.last_name) AS MANAGER, role.salary as SALARY FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN employee as manager on employee.manager_id = manager.id ORDER BY employee.first_name `
 
+    db.query(SQL, function (err, results, fields){
+        console.table(results)
+        menu();
+    })
 }
 //add employee
 function addEmployee(){
