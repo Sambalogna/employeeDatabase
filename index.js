@@ -65,7 +65,23 @@ function viewDepartments() {
 }
 //add to a department
 function addDepartment() {
-
+    console.log('Adding a department..')
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the new deaprtment\'s name?',
+                name: 'new_department'
+            }
+        ])
+        .then((res) =>{
+            const SQL = `INSERT INTO department(name) VALUES(?);`
+            const params = `${res.new_department}`;
+            db.query(SQL, params, function(err, results, fields){
+                console.log('Department added.')
+                viewDepartments();
+            })
+        })
 }
 //view roles
 function viewRoles(){
