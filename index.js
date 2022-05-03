@@ -78,14 +78,14 @@ function addDepartment() {
             const SQL = `INSERT INTO department(name) VALUES(?);`
             const params = `${res.new_department}`;
             db.query(SQL, params, function(err, results, fields){
-                console.log('Department added.')
+                console.log('A new department has been added.')
                 viewDepartments();
             })
         })
 }
 //view roles
 function viewRoles(){
-    console.log('Viewing all roles..')
+    console.log('Viewing all roles.')
     const SQL = `SELECT * FROM role`;
     db.query(SQL, function(err, results, fields){
         console.table(results);
@@ -94,7 +94,38 @@ function viewRoles(){
 }
 //add a role
 function addRole(){
-
+    console.log('Adding a role..')
+    //queries current department name
+    db.query(`SELECT name, id as value FROM department`, (err, data) => {
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the new role\'s title?',
+                    name: 'new_role_title'
+                },
+                {
+                    type: 'input',
+                    message: 'What is the new role\'s salary?',
+                    name: 'new_role_salary'
+                },
+                {
+                    type: 'list',
+                    message: 'What is the new role\'s department?',
+                    name: 'new_role_department',
+                    choices: data
+                }
+            ])
+            .then((res)=> {
+                const SQL = `INSERT INTO role(title, salary, department_id) VALUES(?,?,?);`
+                const params = [res.new_role_title, res.new_role_salary, res.new_role_department]
+                db.query(SQL, params, function(err,results, fields)
+                {
+                    console.log('A new role has been added.')
+                    viewRoles();
+                })
+            })
+    })
 }
 //view employees
 function viewEmployees(){
