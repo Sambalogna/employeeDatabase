@@ -199,7 +199,7 @@ function updateEmployee() {
         ])
         .then((res) => {
             console.log('Updating employee role..')
-            const SQL = `INSERT OVERWRITE employee(role_id) values(?)`
+            const SQL = `UPDATE employee SET =? WHERE roleData = `
             const params = [res.data, res.updateEmployee]
             db.query(SQL,params,function(err,results,fields){
                 console.log('role updated!')
